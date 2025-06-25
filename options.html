@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>PokemonGPT Settings</title>
+</head>
+<body>
+  <h1>PokemonGPT Settings</h1>
+  <label>
+    OpenAI API Key:
+    <input type="password" id="apiKey" />
+  </label>
+  <br />
+  <label>
+    Model:
+    <input type="text" id="model" placeholder="gpt-4o" />
+  </label>
+  <br />
+  <label>
+    Temperature:
+    <input type="number" id="temperature" min="0" max="2" step="0.1" />
+  </label>
+  <br />
+  <button id="save">Save</button>
+  <script src="options.js"></script>
+</body>
+</html>

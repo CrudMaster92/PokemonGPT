@@ -1,6 +1,6 @@
 # PokemonGPT
 
-PokemonGPT is a Chrome extension that acts as an AI battle assistant for [Pokémon Showdown](https://pokemonshowdown.com). It automatically selects moves using recommendations from a local language model.
+PokemonGPT is a Chrome extension that acts as an AI battle assistant for [Pokémon Showdown](https://pokemonshowdown.com). It automatically selects moves using recommendations from the OpenAI API (defaulting to **gpt-4o**).
 
 ## Getting Started
 
@@ -38,14 +38,14 @@ The following tasks outline the work needed to complete the extension:
    - Read the active Pokémon, available moves, and game state from the Showdown UI.
 
 3. **Integrate the language model for move selection.** *(completed)*
-   - Battle state is sent to a local LLM API and the recommended move is received.
+   - Battle state is sent to the OpenAI API and the recommended move is received.
 
 4. **Automate UI interaction.** *(completed)*
    - The extension now programmatically clicks the recommended move in the Showdown interface.
 
-5. **Add configuration and settings.**
-   - Allow users to enable/disable the assistant.
-   - Provide controls to adjust LLM parameters if needed.
+5. **Add configuration and settings.** *(completed)*
+   - Added an options page to provide an OpenAI API key, model name and temperature.
+   - Users can enable/disable and tweak assistant parameters.
 
 6. **Testing and refinement.**
    - Test the assistant in various battle scenarios.
