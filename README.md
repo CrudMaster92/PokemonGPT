@@ -34,7 +34,7 @@ The following tasks outline the work needed to complete the extension:
    - Added a `manifest.json` with permissions for Pokémon Showdown and scripts.
    - Created placeholder `content.js` and `background.js`.
 
-2. **Implement battle state parsing.**
+2. **Implement battle state parsing.** *(completed)*
    - Read the active Pokémon, available moves, and game state from the Showdown UI.
 
 3. **Integrate the language model for move selection.**
