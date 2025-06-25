@@ -15,7 +15,7 @@ PokemonGPT is a Chrome extension that acts as an AI battle assistant for [Pokém
 ```
 PokemonGPT/
   README.md       - You are here
-  manifest.json   - Chrome extension manifest (to be created)
+  manifest.json   - Chrome extension manifest
   content.js      - Content script to interact with Pokémon Showdown
   background.js   - Background script to manage LLM communication
 ```
@@ -30,9 +30,9 @@ PokemonGPT/
 
 The following tasks outline the work needed to complete the extension:
 
-1. **Create basic Chrome extension skeleton.**
-   - Add a `manifest.json` with permissions for Pokémon Showdown and scripts.
-   - Create placeholder `content.js` and `background.js`.
+1. **Create basic Chrome extension skeleton.** *(completed)*
+   - Added a `manifest.json` with permissions for Pokémon Showdown and scripts.
+   - Created placeholder `content.js` and `background.js`.
 
 2. **Implement battle state parsing.**
    - Read the active Pokémon, available moves, and game state from the Showdown UI.
