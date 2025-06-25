@@ -22,6 +22,22 @@ function getAvailableMoves() {
 }
 
 /**
+ * Click the move button matching the provided move name.
+ */
+function selectMove(moveName) {
+  const buttons = Array.from(
+    document.querySelectorAll('button[name="chooseMove"]')
+  );
+  const button = buttons.find(
+    btn => btn.textContent.trim().split('\n')[0] === moveName
+  );
+  if (button) {
+    button.click();
+    console.log('PokemonGPT selected move', moveName);
+  }
+}
+
+/**
  * Parse relevant battle state data from the page.
  */
 function parseBattleState() {
@@ -45,6 +61,13 @@ function reportBattleState() {
     console.log('PokemonGPT battle state', state);
   }
 }
+
+// Listen for move recommendations from the background script
+chrome.runtime.onMessage.addListener(message => {
+  if (message.type === 'recommended_move') {
+    selectMove(message.move);
+  }
+});
 
 // Observe changes within the battle container so we can update the state when
 // the UI changes (e.g., after selecting a move or when a new Pokémon switches in).
