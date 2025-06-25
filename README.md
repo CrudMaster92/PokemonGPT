@@ -37,12 +37,11 @@ The following tasks outline the work needed to complete the extension:
 2. **Implement battle state parsing.** *(completed)*
    - Read the active Pokémon, available moves, and game state from the Showdown UI.
 
-3. **Integrate the language model for move selection.**
-   - Send game state data to a local LLM API.
-   - Receive and apply the recommended move.
+3. **Integrate the language model for move selection.** *(completed)*
+   - Battle state is sent to a local LLM API and the recommended move is received.
 
-4. **Automate UI interaction.**
-   - Programmatically click the recommended move in the Showdown interface.
+4. **Automate UI interaction.** *(completed)*
+   - The extension now programmatically clicks the recommended move in the Showdown interface.
 
 5. **Add configuration and settings.**
    - Allow users to enable/disable the assistant.
