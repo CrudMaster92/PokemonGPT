@@ -19,5 +19,6 @@
   ],
   "action": {
     "default_title": "PokemonGPT"
-  }
+  },
+  "options_page": "options.html"
 }
