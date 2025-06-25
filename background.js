@@ -3,29 +3,61 @@
 
 console.log('PokemonGPT background service worker initialized');
 
-// Local API endpoint for move recommendations
-const API_URL = 'http://localhost:5000/move';
+const DEFAULT_SETTINGS = { apiKey: '', model: 'gpt-4o', temperature: 1 };
+
+function getSettings() {
+  return new Promise(resolve => {
+    chrome.storage.sync.get(DEFAULT_SETTINGS, resolve);
+  });
+}
 
 // Listen for updates from the content script with parsed battle state data.
 chrome.runtime.onMessage.addListener((message, sender) => {
   if (message.type === 'battle_state') {
     console.log('Received battle state', message.state);
 
-    fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(message.state)
-    })
-      .then(res => res.json())
-      .then(data => {
-        console.log('LLM recommended move', data.move);
-        if (sender.tab && data.move) {
-          chrome.tabs.sendMessage(sender.tab.id, {
-            type: 'recommended_move',
-            move: data.move
-          });
-        }
+    getSettings().then(({ apiKey, model, temperature }) => {
+      if (!apiKey) {
+        console.error('No OpenAI API key set');
+        return;
+      }
+
+      const body = {
+        model,
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are a Pokémon Showdown battle assistant. Return only the best move name.'
+          },
+          {
+            role: 'user',
+            content: `Active Pokemon: ${message.state.activePokemon}\nMoves: ${message.state.moves.join(', ')}`
+          }
+        ],
+        temperature
+      };
+
+      fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(body)
       })
-      .catch(err => console.error('LLM request failed', err));
+        .then(res => res.json())
+        .then(data => {
+          const move = data.choices && data.choices[0].message.content.trim();
+          console.log('LLM recommended move', move);
+          if (sender.tab && move) {
+            chrome.tabs.sendMessage(sender.tab.id, {
+              type: 'recommended_move',
+              move
+            });
+          }
+        })
+        .catch(err => console.error('LLM request failed', err));
+    });
   }
 });
