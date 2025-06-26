@@ -47,8 +47,9 @@ The following tasks outline the work needed to complete the extension:
    - Added an options page to provide an OpenAI API key, model name and temperature.
    - Users can enable/disable and tweak assistant parameters.
 
-6. **Testing and refinement.**
+ 6. **Testing and refinement.**
    - Test the assistant in various battle scenarios.
    - Iterate on the LLM prompt and logic for better decision making.
+   - Fix options page to handle a temperature value of 0.
 
 Contributions should update this task list as work progresses.

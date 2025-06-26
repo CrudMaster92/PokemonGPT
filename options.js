@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('save').addEventListener('click', () => {
     const apiKey = document.getElementById('apiKey').value.trim();
     const model = document.getElementById('model').value.trim() || 'gpt-4o';
-    const temperature = parseFloat(document.getElementById('temperature').value) || 1;
+    let temperature = parseFloat(document.getElementById('temperature').value);
+    if (isNaN(temperature)) temperature = 1;
     chrome.storage.sync.set({ apiKey, model, temperature }, () => {
       alert('Settings saved');
     });
