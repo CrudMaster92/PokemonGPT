@@ -12,13 +12,19 @@ function createSidebar() {
   sidebar = document.createElement('div');
   sidebar.id = 'pokemon-gpt-sidebar';
   sidebar.style.cssText =
-    'position:fixed;top:0;right:0;width:300px;height:100%;background:white;z-index:10000;border-left:1px solid #ccc;padding:4px;overflow-y:auto;font-family:sans-serif;font-size:12px;';
+    'position:fixed;top:0;right:0;width:300px;height:100%;' +
+    'background:#f7f7f7;z-index:10000;border-left:1px solid #ccc;' +
+    'display:flex;flex-direction:column;font-family:sans-serif;font-size:12px;';
+
   const header = document.createElement('div');
   header.textContent = 'PokemonGPT';
-  header.style.fontWeight = 'bold';
+  header.style.cssText = 'font-weight:bold;padding:8px;background:#444;color:white';
   sidebar.appendChild(header);
+
   logContainer = document.createElement('div');
+  logContainer.style.cssText = 'flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:4px;';
   sidebar.appendChild(logContainer);
+
   document.body.appendChild(sidebar);
 }
 
@@ -34,14 +40,34 @@ function hideSidebar() {
 function logMessage(sender, text) {
   if (!logContainer) return;
   const div = document.createElement('div');
-  div.textContent = `${sender}: ${text}`;
+  div.textContent = text;
+  div.style.padding = '6px 8px';
+  div.style.borderRadius = '4px';
+  div.style.maxWidth = '90%';
+  if (sender === 'You') {
+    div.style.alignSelf = 'flex-end';
+    div.style.background = '#dcf8c6';
+  } else if (sender === 'AI') {
+    div.style.alignSelf = 'flex-start';
+    div.style.background = '#fff';
+    div.style.border = '1px solid #ddd';
+  } else {
+    div.style.alignSelf = 'center';
+    div.style.background = '#ffecec';
+    div.style.border = '1px solid #f5c2c2';
+  }
   logContainer.appendChild(div);
   logContainer.scrollTop = logContainer.scrollHeight;
 }
 
-chrome.storage.sync.get({ enabled: true }, data => {
+chrome.storage.sync.get({ enabled: true, apiKey: '' }, data => {
   enabled = data.enabled;
-  if (enabled) showSidebar();
+  if (enabled) {
+    showSidebar();
+    if (!data.apiKey) {
+      logMessage('System', 'Set your OpenAI API key in the extension options.');
+    }
+  }
   setupObserver();
 });
 
@@ -196,6 +222,8 @@ chrome.runtime.onMessage.addListener(message => {
   if (message.type === 'recommended_move') {
     selectMove(message.move);
     logMessage('AI', message.move);
+  } else if (message.type === 'error') {
+    logMessage('System', message.text);
   }
 });
 
