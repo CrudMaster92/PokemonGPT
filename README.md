@@ -71,4 +71,8 @@ The following tasks outline the work needed to complete the extension:
 9. **Open settings from extension icon.** *(completed)*
    - Clicking the PokemonGPT icon now opens the options page for quick access.
 
+10. **Add sidebar chat log and enable/disable option.** *(completed)*
+    - A sidebar shows the conversation with the AI and opens automatically.
+    - Settings now include a checkbox to toggle the extension on or off.
+
 Contributions should update this task list as work progresses.
