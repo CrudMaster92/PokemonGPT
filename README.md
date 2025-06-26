@@ -75,4 +75,8 @@ The following tasks outline the work needed to complete the extension:
     - A sidebar shows the conversation with the AI and opens automatically.
     - Settings now include a checkbox to toggle the extension on or off.
 
+11. **Improve sidebar UI and API key errors.** *(completed)*
+    - Sidebar messages are styled like a simple chat UI.
+    - Users see a message when the OpenAI API key is missing or invalid.
+
 Contributions should update this task list as work progresses.
