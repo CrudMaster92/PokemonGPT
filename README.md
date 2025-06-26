@@ -68,4 +68,7 @@ The following tasks outline the work needed to complete the extension:
    - Track HP percentages and status for active Pokémon each turn.
    - Send this richer state information to the language model.
 
+9. **Open settings from extension icon.** *(completed)*
+   - Clicking the PokemonGPT icon now opens the options page for quick access.
+
 Contributions should update this task list as work progresses.

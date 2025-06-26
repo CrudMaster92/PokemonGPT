@@ -3,6 +3,11 @@
 
 console.log('PokemonGPT background service worker initialized');
 
+// Open the settings page when the extension icon is clicked
+chrome.action.onClicked.addListener(() => {
+  chrome.runtime.openOptionsPage();
+});
+
 const DEFAULT_SETTINGS = {
   apiKey: '',
   model: 'gpt-4o',
