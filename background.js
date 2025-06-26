@@ -29,6 +29,12 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     getSettings().then(({ apiKey, model, temperature, prompt }) => {
       if (!apiKey) {
         console.error('No OpenAI API key set');
+        if (sender.tab) {
+          chrome.tabs.sendMessage(sender.tab.id, {
+            type: 'error',
+            text: 'OpenAI API key not set.'
+          });
+        }
         return;
       }
 
@@ -71,7 +77,15 @@ chrome.runtime.onMessage.addListener((message, sender) => {
             });
           }
         })
-        .catch(err => console.error('LLM request failed', err));
+        .catch(err => {
+          console.error('LLM request failed', err);
+          if (sender.tab) {
+            chrome.tabs.sendMessage(sender.tab.id, {
+              type: 'error',
+              text: 'Failed to reach OpenAI API.'
+            });
+          }
+        });
     });
   }
 });
