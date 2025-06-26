@@ -3,6 +3,33 @@
 
 console.log('PokemonGPT content script loaded');
 
+// Track team roster and state across turns
+let currentState = {
+  roster: null,
+  hp: {},
+  status: {}
+};
+
+/**
+ * Parse the list of Pokémon on each side at battle start.
+ */
+function getTeamRoster() {
+  const teams = { player: [], opponent: [] };
+  const trainers = document.querySelectorAll('.trainer');
+  trainers.forEach((trainer, idx) => {
+    const side = idx === 0 ? 'player' : 'opponent';
+    const icons = Array.from(trainer.querySelectorAll('.teamicons span'));
+    icons.forEach(icon => {
+      const species =
+        icon.getAttribute('aria-label') ||
+        icon.getAttribute('title') ||
+        icon.className.replace(/.*picon-/, '');
+      teams[side].push({ species, hp: 100, status: null });
+    });
+  });
+  return teams;
+}
+
 /**
  * Extract the name of the active Pokémon from the battle interface.
  */
@@ -19,6 +46,36 @@ function getAvailableMoves() {
     document.querySelectorAll('button[name="chooseMove"]')
   );
   return buttons.map(btn => btn.textContent.trim().split('\n')[0]);
+}
+
+/**
+ * Read HP percentage and status text from an active Pokémon element.
+ */
+function parseHPAndStatus(activeEl) {
+  const hpText = activeEl.querySelector('.hpbar .hptext');
+  let hp = null;
+  if (hpText) {
+    const match = hpText.textContent.match(/(\d+)%/);
+    if (match) hp = parseInt(match[1], 10);
+  }
+  const statusEl = activeEl.querySelector('.status');
+  const status = statusEl ? statusEl.textContent.trim() : null;
+  return { hp, status };
+}
+
+/**
+ * Update global HP and status information for all active Pokémon.
+ */
+function updateActiveState() {
+  const activeMons = document.querySelectorAll('.active');
+  activeMons.forEach(el => {
+    const nameEl = el.querySelector('.pokename');
+    if (!nameEl) return;
+    const name = nameEl.textContent.trim();
+    const info = parseHPAndStatus(el);
+    currentState.hp[name] = info.hp;
+    currentState.status[name] = info.status;
+  });
 }
 
 /**
@@ -41,14 +98,30 @@ function selectMove(moveName) {
  * Parse relevant battle state data from the page.
  */
 function parseBattleState() {
+  // Ensure roster is captured once the team icons are available
+  if (!currentState.roster) {
+    const roster = getTeamRoster();
+    if (roster.player.length || roster.opponent.length) {
+      currentState.roster = roster;
+    }
+  }
+
   const activePokemon = getActivePokemon();
   const moves = getAvailableMoves();
+
+  updateActiveState();
 
   if (!activePokemon && moves.length === 0) {
     return null;
   }
 
-  return { activePokemon, moves };
+  return {
+    activePokemon,
+    moves,
+    roster: currentState.roster,
+    hp: currentState.hp,
+    status: currentState.status
+  };
 }
 
 /**
