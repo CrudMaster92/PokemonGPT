@@ -7,6 +7,7 @@ PokemonGPT is a Chrome extension that acts as an AI battle assistant for [Pokém
 1. Clone this repository and open the `chrome://extensions` page in Chrome.
 2. Enable **Developer mode** and load the extension directory as an unpacked extension.
 3. Open a Pokémon Showdown battle and the assistant will suggest and select moves automatically.
+4. Use the extension's options page to set your API key, model, temperature, and custom system prompt.
 
 ## Development Guide
 
@@ -47,7 +48,10 @@ The following tasks outline the work needed to complete the extension:
    - Added an options page to provide an OpenAI API key, model name and temperature.
    - Users can enable/disable and tweak assistant parameters.
 
- 6. **Testing and refinement.**
+6. **Add custom system prompt field.** *(completed)*
+   - Users can edit the prompt sent to the language model.
+
+7. **Testing and refinement.**
    - Test the assistant in various battle scenarios.
    - Iterate on the LLM prompt and logic for better decision making.
    - Fix options page to handle a temperature value of 0.

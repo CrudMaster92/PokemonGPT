@@ -3,7 +3,12 @@
 
 console.log('PokemonGPT background service worker initialized');
 
-const DEFAULT_SETTINGS = { apiKey: '', model: 'gpt-4o', temperature: 1 };
+const DEFAULT_SETTINGS = {
+  apiKey: '',
+  model: 'gpt-4o',
+  temperature: 1,
+  prompt: 'You are a Pokémon Showdown battle assistant. Return only the best move name.'
+};
 
 function getSettings() {
   return new Promise(resolve => {
@@ -16,7 +21,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   if (message.type === 'battle_state') {
     console.log('Received battle state', message.state);
 
-    getSettings().then(({ apiKey, model, temperature }) => {
+    getSettings().then(({ apiKey, model, temperature, prompt }) => {
       if (!apiKey) {
         console.error('No OpenAI API key set');
         return;
@@ -27,8 +32,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
         messages: [
           {
             role: 'system',
-            content:
-              'You are a Pokémon Showdown battle assistant. Return only the best move name.'
+            content: prompt
           },
           {
             role: 'user',
