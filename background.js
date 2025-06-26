@@ -36,7 +36,12 @@ chrome.runtime.onMessage.addListener((message, sender) => {
           },
           {
             role: 'user',
-            content: `Active Pokemon: ${message.state.activePokemon}\nMoves: ${message.state.moves.join(', ')}`
+            content:
+              `Active Pokemon: ${message.state.activePokemon}\n` +
+              `Moves: ${message.state.moves.join(', ')}\n` +
+              `HP: ${JSON.stringify(message.state.hp)}\n` +
+              `Status: ${JSON.stringify(message.state.status)}\n` +
+              `Roster: ${JSON.stringify(message.state.roster)}`
           }
         ],
         temperature

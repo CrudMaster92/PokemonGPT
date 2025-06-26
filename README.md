@@ -27,6 +27,13 @@ PokemonGPT/
 
 No npm steps are currently required. Simply reload the extension in Chrome after you edit files.
 
+### Battle State Reporting
+
+The extension records the entire team roster at the start of a battle and tracks
+HP values and status conditions for the active Pokémon each turn. This richer
+state information is forwarded to the language model so it can make more
+informed decisions.
+
 ## Task List
 
 The following tasks outline the work needed to complete the extension:
@@ -55,5 +62,10 @@ The following tasks outline the work needed to complete the extension:
    - Test the assistant in various battle scenarios.
    - Iterate on the LLM prompt and logic for better decision making.
    - Fix options page to handle a temperature value of 0.
+
+8. **Expand battle state reporting.** *(completed)*
+   - Parse the full team roster at battle start.
+   - Track HP percentages and status for active Pokémon each turn.
+   - Send this richer state information to the language model.
 
 Contributions should update this task list as work progresses.
