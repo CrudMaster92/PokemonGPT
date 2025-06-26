@@ -3,6 +3,60 @@
 
 console.log('PokemonGPT content script loaded');
 
+let enabled = true;
+let sidebar;
+let logContainer;
+let observer;
+
+function createSidebar() {
+  sidebar = document.createElement('div');
+  sidebar.id = 'pokemon-gpt-sidebar';
+  sidebar.style.cssText =
+    'position:fixed;top:0;right:0;width:300px;height:100%;background:white;z-index:10000;border-left:1px solid #ccc;padding:4px;overflow-y:auto;font-family:sans-serif;font-size:12px;';
+  const header = document.createElement('div');
+  header.textContent = 'PokemonGPT';
+  header.style.fontWeight = 'bold';
+  sidebar.appendChild(header);
+  logContainer = document.createElement('div');
+  sidebar.appendChild(logContainer);
+  document.body.appendChild(sidebar);
+}
+
+function showSidebar() {
+  if (!sidebar) createSidebar();
+  sidebar.style.display = 'block';
+}
+
+function hideSidebar() {
+  if (sidebar) sidebar.style.display = 'none';
+}
+
+function logMessage(sender, text) {
+  if (!logContainer) return;
+  const div = document.createElement('div');
+  div.textContent = `${sender}: ${text}`;
+  logContainer.appendChild(div);
+  logContainer.scrollTop = logContainer.scrollHeight;
+}
+
+chrome.storage.sync.get({ enabled: true }, data => {
+  enabled = data.enabled;
+  if (enabled) showSidebar();
+  setupObserver();
+});
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'sync' && changes.enabled) {
+    enabled = changes.enabled.newValue;
+    if (enabled) {
+      showSidebar();
+      reportBattleState();
+    } else {
+      hideSidebar();
+    }
+  }
+});
+
 // Track team roster and state across turns
 let currentState = {
   roster: null,
@@ -128,10 +182,12 @@ function parseBattleState() {
  * Send the current battle state to the background script.
  */
 function reportBattleState() {
+  if (!enabled) return;
   const state = parseBattleState();
   if (state) {
     chrome.runtime.sendMessage({ type: 'battle_state', state });
     console.log('PokemonGPT battle state', state);
+    logMessage('You', 'Sent battle state');
   }
 }
 
@@ -139,15 +195,17 @@ function reportBattleState() {
 chrome.runtime.onMessage.addListener(message => {
   if (message.type === 'recommended_move') {
     selectMove(message.move);
+    logMessage('AI', message.move);
   }
 });
 
 // Observe changes within the battle container so we can update the state when
 // the UI changes (e.g., after selecting a move or when a new Pokémon switches in).
-const battleContainer = document.getElementById('battle');
-if (battleContainer) {
-  const observer = new MutationObserver(() => reportBattleState());
-  observer.observe(battleContainer, { childList: true, subtree: true });
-  // Initial state report
-  reportBattleState();
+function setupObserver() {
+  const battleContainer = document.getElementById('battle');
+  if (battleContainer) {
+    observer = new MutationObserver(() => reportBattleState());
+    observer.observe(battleContainer, { childList: true, subtree: true });
+    if (enabled) reportBattleState();
+  }
 }
