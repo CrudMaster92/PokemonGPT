@@ -18,13 +18,13 @@ PokemonGPT/
   manifest.json   - Chrome extension manifest
   content.js      - Content script to interact with Pokémon Showdown
   background.js   - Background script to manage LLM communication
+  options.html    - Options page UI
+  options.js      - Logic to save and load settings
 ```
 
 ### Local Setup
 
-1. Install dependencies with `npm install` (once the project uses npm).
-2. Run `npm run build` to bundle scripts if a build step is required.
-3. Reload the extension in Chrome after changes.
+No npm steps are currently required. Simply reload the extension in Chrome after you edit files.
 
 ## Task List
 
