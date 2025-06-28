@@ -79,4 +79,7 @@ The following tasks outline the work needed to complete the extension:
     - Sidebar messages are styled like a simple chat UI.
     - Users see a message when the OpenAI API key is missing or invalid.
 
+12. **Add model dropdown for updated OpenAI models.** *(completed)*
+    - Options page now provides a select list of model names instead of a text field.
+
 Contributions should update this task list as work progresses.
