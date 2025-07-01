@@ -55,7 +55,11 @@ chrome.runtime.onMessage.addListener((message, sender) => {
               `Roster: ${JSON.stringify(message.state.roster)}`
           }
         ],
-        temperature
+        temperature,
+        max_tokens: 50,
+        top_p: 1,
+        presence_penalty: 0,
+        frequency_penalty: 0
       };
 
       fetch('https://api.openai.com/v1/chat/completions', {
