@@ -6,6 +6,7 @@ console.log('PokemonGPT content script loaded');
 let enabled = true;
 let sidebar;
 let logContainer;
+let statusEl;
 let observer;
 
 function createSidebar() {
@@ -20,6 +21,11 @@ function createSidebar() {
   header.textContent = 'PokemonGPT';
   header.style.cssText = 'font-weight:bold;padding:8px;background:#444;color:white';
   sidebar.appendChild(header);
+
+  statusEl = document.createElement('div');
+  statusEl.textContent = 'Waiting for battle...';
+  statusEl.style.cssText = 'padding:4px 8px;background:#eee;border-bottom:1px solid #ccc;font-size:11px;';
+  sidebar.appendChild(statusEl);
 
   logContainer = document.createElement('div');
   logContainer.style.cssText = 'flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:4px;';
@@ -60,6 +66,10 @@ function showSidebar() {
 
 function hideSidebar() {
   if (sidebar) sidebar.style.display = 'none';
+}
+
+function setStatus(text) {
+  if (statusEl) statusEl.textContent = text;
 }
 
 function logMessage(sender, text) {
@@ -239,16 +249,22 @@ function reportBattleState() {
     chrome.runtime.sendMessage({ type: 'battle_state', state });
     console.log('PokemonGPT battle state', state);
     logMessage('You', 'Sent battle state');
+    setStatus('AI thinking...');
   }
 }
 
 // Listen for move recommendations from the background script
 chrome.runtime.onMessage.addListener(message => {
   if (message.type === 'recommended_move') {
+    setStatus(`Selecting ${message.move}...`);
     selectMove(message.move);
     logMessage('AI', message.move);
+    setStatus('Waiting for next turn...');
   } else if (message.type === 'error') {
     logMessage('System', message.text);
+  }
+  if (message.type === 'status') {
+    setStatus(message.text);
   }
 });
 

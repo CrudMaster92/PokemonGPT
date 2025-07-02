@@ -79,6 +79,13 @@ chrome.runtime.onMessage.addListener((message, sender) => {
         frequency_penalty: 0
       };
 
+      if (sender.tab) {
+        chrome.tabs.sendMessage(sender.tab.id, {
+          type: 'status',
+          text: 'Contacting OpenAI...'
+        });
+      }
+
       fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -103,6 +110,10 @@ chrome.runtime.onMessage.addListener((message, sender) => {
                 type: 'recommended_move',
                 move
               });
+              chrome.tabs.sendMessage(sender.tab.id, {
+                type: 'status',
+                text: `Decided on ${move}`
+              });
             }
           }
         })
@@ -112,6 +123,10 @@ chrome.runtime.onMessage.addListener((message, sender) => {
             chrome.tabs.sendMessage(sender.tab.id, {
               type: 'error',
               text: 'LLM request failed. Check your API key.'
+            });
+            chrome.tabs.sendMessage(sender.tab.id, {
+              type: 'status',
+              text: 'LLM request failed'
             });
           }
         });
