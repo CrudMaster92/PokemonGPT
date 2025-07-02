@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "PokemonGPT",
   "description": "AI battle assistant for Pokémon Showdown",
-  "version": "0.2",
+  "version": "0.3",
   "permissions": ["activeTab", "scripting", "storage"],
   "host_permissions": [
     "https://play.pokemonshowdown.com/*",
@@ -14,7 +14,9 @@
   "content_scripts": [
     {
       "matches": ["https://play.pokemonshowdown.com/*"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "all_frames": true,
+      "match_about_blank": true
     }
   ],
   "options_page": "options.html",

@@ -115,9 +115,11 @@ chrome.storage.onChanged.addListener((changes, area) => {
     enabled = changes.enabled.newValue;
     if (enabled) {
       showSidebar();
+      setupObserver();
       reportBattleState();
     } else {
       hideSidebar();
+      if (observer) observer.disconnect();
     }
   }
 });
@@ -205,7 +207,7 @@ function selectMove(moveName) {
     document.querySelectorAll('button[name="chooseMove"]')
   );
   const button = buttons.find(
-    btn => btn.textContent.trim().split('\n')[0] === moveName
+    btn => btn.textContent.trim().split(/[\n ]\d+\/\d+/)[0] === moveName
   );
   if (button) {
     button.click();
@@ -266,6 +268,8 @@ chrome.runtime.onMessage.addListener(message => {
     setStatus('Waiting for next turn...');
   } else if (message.type === 'error') {
     logMessage('System', message.text);
+  } else if (message.type === 'chat_reply') {
+    logMessage('AI', message.text);
   }
   if (message.type === 'status') {
     setStatus(message.text);
@@ -275,10 +279,21 @@ chrome.runtime.onMessage.addListener(message => {
 // Observe changes within the battle container so we can update the state when
 // the UI changes (e.g., after selecting a move or when a new Pokémon switches in).
 function setupObserver() {
-  const battleContainer = document.getElementById('battle');
-  if (battleContainer) {
+  if (enabled) reportBattleState();
+  function attach() {
+    const battleContainer = document.getElementById('battle');
+    if (!battleContainer) return false;
+    if (observer) observer.disconnect();
     observer = new MutationObserver(() => reportBattleState());
     observer.observe(battleContainer, { childList: true, subtree: true });
     if (enabled) reportBattleState();
+    return true;
+  }
+
+  if (!attach()) {
+    const tempObserver = new MutationObserver(() => {
+      if (attach()) tempObserver.disconnect();
+    });
+    tempObserver.observe(document.body, { childList: true, subtree: true });
   }
 }

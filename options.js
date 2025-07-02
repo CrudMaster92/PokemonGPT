@@ -23,6 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isNaN(temperature)) temperature = 1;
     const enabled = document.getElementById('enabled').checked;
     const prompt = document.getElementById('prompt').value.trim();
+    if (enabled && !apiKey) {
+      alert('Enter an API key before enabling the assistant.');
+      return;
+    }
     chrome.storage.sync.set({ apiKey, model, temperature, prompt, enabled }, () => {
       alert('Settings saved');
     });
