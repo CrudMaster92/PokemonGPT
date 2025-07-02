@@ -206,8 +206,8 @@ function selectMove(moveName) {
   const buttons = Array.from(
     document.querySelectorAll('button[name="chooseMove"]')
   );
-  const button = buttons.find(
-    btn => btn.textContent.trim().split('\n')[0] === moveName
+  const button = buttons.find(btn =>
+    btn.textContent.trim().split(/[\n ]\d+\/\d+/)[0] === moveName
   );
   if (button) {
     button.click();
@@ -269,7 +269,9 @@ chrome.runtime.onMessage.addListener(message => {
   } else if (message.type === 'error') {
     logMessage('System', message.text);
   }
-  if (message.type === 'status') {
+  if (message.type === 'chat_reply') {
+    logMessage('AI', message.text);
+  } else if (message.type === 'status') {
     setStatus(message.text);
   }
 });
@@ -283,7 +285,7 @@ function setupObserver() {
     if (observer) observer.disconnect();
     observer = new MutationObserver(() => reportBattleState());
     observer.observe(battleContainer, { childList: true, subtree: true });
-    if (enabled) reportBattleState();
+    reportBattleState();
     return true;
   }
 
