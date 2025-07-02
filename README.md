@@ -7,9 +7,10 @@ PokemonGPT is a Chrome extension that acts as an AI battle assistant for [Pokém
 1. Clone this repository and open the `chrome://extensions` page in Chrome.
 2. Enable **Developer mode** and load the extension directory as an unpacked extension.
 3. Open a Pokémon Showdown battle and the assistant will suggest and select moves automatically.
-4. Use the extension's options page to set your API key, choose a model (gpt-3.5, gpt-4, gpt-4o, openai-o3, etc.), adjust temperature, and customize the system prompt.
-5. Send extra instructions using the chat box that appears in the sidebar during battles.
-6. Watch the status line in the sidebar to see when the AI is thinking or waiting for the next turn.
+4. In Chrome 124 or later, allow the extension to run on iframe sites under **Site access** in the extension's details.
+5. Use the extension's options page to set your API key, choose a model (gpt-3.5, gpt-4, gpt-4o, openai-o3, etc.), adjust temperature, and customize the system prompt.
+6. Send extra instructions using the chat box that appears in the sidebar during battles.
+7. Watch the status line in the sidebar to see when the AI is thinking or waiting for the next turn.
 
 ## Development Guide
 
@@ -99,5 +100,23 @@ The following tasks outline the work needed to complete the extension:
 
 17. **Handle late battle start detection.** *(completed)*
     - The content script now watches for the battle element to appear even after page load.
+
+18. **Inject content script into battle iframe.** *(completed)*
+    - The extension now runs inside Showdown's battle frame using `all_frames` and `match_about_blank`.
+
+19. **Respond to user chat messages.** *(completed)*
+    - Chat messages immediately trigger an LLM request and the reply appears in the sidebar.
+
+20. **Improve move button matching.** *(completed)*
+    - Move selection now tolerates PP counts like "Thunderbolt 16/16".
+
+21. **Report initial battle state on load.** *(completed)*
+    - The content script sends the first state immediately after setting up the observer.
+
+22. **Validate API key before enabling.** *(completed)*
+    - Options page prevents enabling the assistant when no API key is entered.
+
+23. **Display errors in the sidebar.** *(completed)*
+    - Background errors are forwarded to the page so users can see them.
 
 Contributions should update this task list as work progresses.
