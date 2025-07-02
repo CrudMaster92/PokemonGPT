@@ -94,4 +94,7 @@ The following tasks outline the work needed to complete the extension:
 15. **Show assistant status in the sidebar.** *(completed)*
     - A new status line indicates when the AI is thinking, executing a move, or waiting for the next turn.
 
+16. **Resize battle screen when sidebar is open.** *(completed)*
+    - The main page now shifts left so the sidebar no longer covers information.
+
 Contributions should update this task list as work progresses.
