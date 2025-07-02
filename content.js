@@ -3,6 +3,8 @@
 
 console.log('PokemonGPT content script loaded');
 
+const SIDEBAR_WIDTH = 300;
+
 let enabled = true;
 let sidebar;
 let logContainer;
@@ -13,7 +15,7 @@ function createSidebar() {
   sidebar = document.createElement('div');
   sidebar.id = 'pokemon-gpt-sidebar';
   sidebar.style.cssText =
-    'position:fixed;top:0;right:0;width:300px;height:100%;' +
+    `position:fixed;top:0;right:0;width:${SIDEBAR_WIDTH}px;height:100%;` +
     'background:#f7f7f7;z-index:10000;border-left:1px solid #ccc;' +
     'display:flex;flex-direction:column;font-family:sans-serif;font-size:12px;';
 
@@ -62,10 +64,12 @@ function createSidebar() {
 function showSidebar() {
   if (!sidebar) createSidebar();
   sidebar.style.display = 'block';
+  document.body.style.marginRight = `${SIDEBAR_WIDTH}px`;
 }
 
 function hideSidebar() {
   if (sidebar) sidebar.style.display = 'none';
+  document.body.style.marginRight = '';
 }
 
 function setStatus(text) {
