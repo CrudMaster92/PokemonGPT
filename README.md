@@ -97,4 +97,7 @@ The following tasks outline the work needed to complete the extension:
 16. **Resize battle screen when sidebar is open.** *(completed)*
     - The main page now shifts left so the sidebar no longer covers information.
 
+17. **Handle late battle start detection.** *(completed)*
+    - The content script now watches for the battle element to appear even after page load.
+
 Contributions should update this task list as work progresses.

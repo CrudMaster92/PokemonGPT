@@ -115,9 +115,11 @@ chrome.storage.onChanged.addListener((changes, area) => {
     enabled = changes.enabled.newValue;
     if (enabled) {
       showSidebar();
+      setupObserver();
       reportBattleState();
     } else {
       hideSidebar();
+      if (observer) observer.disconnect();
     }
   }
 });
@@ -275,10 +277,20 @@ chrome.runtime.onMessage.addListener(message => {
 // Observe changes within the battle container so we can update the state when
 // the UI changes (e.g., after selecting a move or when a new Pokémon switches in).
 function setupObserver() {
-  const battleContainer = document.getElementById('battle');
-  if (battleContainer) {
+  function attach() {
+    const battleContainer = document.getElementById('battle');
+    if (!battleContainer) return false;
+    if (observer) observer.disconnect();
     observer = new MutationObserver(() => reportBattleState());
     observer.observe(battleContainer, { childList: true, subtree: true });
     if (enabled) reportBattleState();
+    return true;
+  }
+
+  if (!attach()) {
+    const tempObserver = new MutationObserver(() => {
+      if (attach()) tempObserver.disconnect();
+    });
+    tempObserver.observe(document.body, { childList: true, subtree: true });
   }
 }
