@@ -25,6 +25,31 @@ function createSidebar() {
   logContainer.style.cssText = 'flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:4px;';
   sidebar.appendChild(logContainer);
 
+  const form = document.createElement('form');
+  form.style.cssText = 'display:flex;gap:4px;padding:8px;border-top:1px solid #ccc;';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Type a message...';
+  input.style.cssText = 'flex:1;padding:4px;';
+
+  const button = document.createElement('button');
+  button.type = 'submit';
+  button.textContent = 'Send';
+
+  form.appendChild(input);
+  form.appendChild(button);
+  sidebar.appendChild(form);
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    logMessage('You', text);
+    chrome.runtime.sendMessage({ type: 'user_chat', text });
+    input.value = '';
+  });
+
   document.body.appendChild(sidebar);
 }
 

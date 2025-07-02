@@ -15,6 +15,13 @@ const DEFAULT_SETTINGS = {
   prompt: 'You are a Pokémon Showdown battle assistant. Return only the best move name.'
 };
 
+const conversations = {};
+
+function getConversation(tabId) {
+  if (!conversations[tabId]) conversations[tabId] = [];
+  return conversations[tabId];
+}
+
 function getSettings() {
   return new Promise(resolve => {
     chrome.storage.sync.get(DEFAULT_SETTINGS, resolve);
@@ -23,6 +30,15 @@ function getSettings() {
 
 // Listen for updates from the content script with parsed battle state data.
 chrome.runtime.onMessage.addListener((message, sender) => {
+  const tabId = sender.tab && sender.tab.id;
+  if (!tabId) return;
+
+  if (message.type === 'user_chat') {
+    const convo = getConversation(tabId);
+    convo.push({ role: 'user', content: message.text });
+    return;
+  }
+
   if (message.type === 'battle_state') {
     console.log('Received battle state', message.state);
 
@@ -38,22 +54,23 @@ chrome.runtime.onMessage.addListener((message, sender) => {
         return;
       }
 
+      const convo = getConversation(tabId);
+      const battleMessage = {
+        role: 'user',
+        content:
+          `Active Pokemon: ${message.state.activePokemon}\n` +
+          `Moves: ${message.state.moves.join(', ')}\n` +
+          `HP: ${JSON.stringify(message.state.hp)}\n` +
+          `Status: ${JSON.stringify(message.state.status)}\n` +
+          `Roster: ${JSON.stringify(message.state.roster)}`
+      };
+
       const body = {
         model,
         messages: [
-          {
-            role: 'system',
-            content: prompt
-          },
-          {
-            role: 'user',
-            content:
-              `Active Pokemon: ${message.state.activePokemon}\n` +
-              `Moves: ${message.state.moves.join(', ')}\n` +
-              `HP: ${JSON.stringify(message.state.hp)}\n` +
-              `Status: ${JSON.stringify(message.state.status)}\n` +
-              `Roster: ${JSON.stringify(message.state.roster)}`
-          }
+          { role: 'system', content: prompt },
+          ...convo,
+          battleMessage
         ],
         temperature,
         max_tokens: 50,
@@ -79,11 +96,14 @@ chrome.runtime.onMessage.addListener((message, sender) => {
         .then(data => {
           const move = data.choices && data.choices[0].message.content.trim();
           console.log('LLM recommended move', move);
-          if (sender.tab && move) {
-            chrome.tabs.sendMessage(sender.tab.id, {
-              type: 'recommended_move',
-              move
-            });
+          if (move) {
+            convo.push({ role: 'assistant', content: move });
+            if (sender.tab) {
+              chrome.tabs.sendMessage(sender.tab.id, {
+                type: 'recommended_move',
+                move
+              });
+            }
           }
         })
         .catch(err => {
